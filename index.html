@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instituto Natureza do Tocantins - NATURATINS | Painel GEO-AEF & Limites Municipais</title>
+  
+  <!-- SEO & Meta -->
+  <meta name="description" content="Painel de consulta geográfico para Autorização de Exploração Florestal (AEF) e Limites Municipais do Instituto Natureza do Tocantins - NATURATINS.">
+  
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <!-- Leaflet GIS CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  
+  <!-- Estilos Customizados NATURATINS -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="app-container">
+    
+    <!-- 1. FAIXA SUPERIOR GOVERNAMENTAL DO TOCANTINS -->
+    <div class="gov-top-bar">
+      <div class="gov-logo-container">
+        <!-- Brasão Oficial do Tocantins SVG -->
+        <svg class="gov-brasao-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="#1b4282"/>
+          <path d="M50 15 L62 40 L88 40 L67 56 L75 82 L50 66 L25 82 L33 56 L12 40 L38 40 Z" fill="#ffd100"/>
+          <circle cx="50" cy="50" r="22" fill="#15803d"/>
+          <path d="M50 30 L55 45 L70 45 L58 54 L62 69 L50 60 L38 69 L42 54 L30 45 L45 45 Z" fill="#ffffff"/>
+        </svg>
+        <div>
+          <div class="gov-institution-title">INSTITUTO NATUREZA DO TOCANTINS</div>
+          <div class="gov-state-title">TOCANTINS</div>
+        </div>
+      </div>
+
+      <!-- Links de Navegação Governamental -->
+      <div class="gov-nav-links">
+        <a href="#">AGENDA DE CONTATO DOS ÓRGÃOS</a>
+        <a href="#">SISTEMAS</a>
+        <a href="#">SERVIÇOS</a>
+        <a href="#">TRANSPARÊNCIA</a>
+        <a href="#">ACESSO À INFORMAÇÃO</a>
+        <a href="#">GOVERNO</a>
+        <a href="#">ÓRGÃOS DO GOVERNO ▾</a>
+      </div>
+
+      <!-- Redes Sociais NATURATINS -->
+      <div class="gov-social-icons">
+        <a href="#" class="social-icon-btn" title="Facebook">
+          <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" class="social-icon-btn" title="Instagram">
+          <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" class="social-icon-btn" title="X (Twitter)">
+          <svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+        </a>
+        <a href="#" class="social-icon-btn" title="YouTube">
+          <svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- 2. HEADER PRINCIPAL AZUL REAL NATURATINS (COM BOTÃO AMARELO DE MENU) -->
+    <header class="naturatins-header">
+      <div class="naturatins-brand">
+        <h2>Instituto Natureza do Tocantins</h2>
+        <span>Painel GEO-AEF & Limites Municipais</span>
+      </div>
+      
+      <div class="naturatins-actions">
+        <!-- Estatísticas Rápidas -->
+        <div class="header-stats">
+          <div class="stat-chip">
+            <span>AEFs:</span> <strong id="total-aefs-count">0</strong>
+          </div>
+          <div class="stat-chip">
+            <span>Área AEF:</span> <strong id="total-area-count">0 ha</strong>
+          </div>
+          <div class="stat-chip">
+            <span>Municípios (IBGE):</span> <strong id="total-muni-count">139</strong>
+          </div>
+        </div>
+
+        <!-- Botão Busca -->
+        <button class="btn-busca-header" onclick="document.getElementById('input-aef-num').focus()" title="Busca Rápida">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <span>BUSCA</span>
+        </button>
+
+        <!-- Botão Amarelo de Menu com Dropdown -->
+        <div class="menu-container" style="position: relative;">
+          <button class="btn-menu-yellow" onclick="document.getElementById('main-menu-dropdown').classList.toggle('show')">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            <span>MENU</span>
+          </button>
+          
+          <div id="main-menu-dropdown" class="menu-dropdown">
+            <div class="menu-dropdown-header">
+              <span class="header-main-title">Ativar / Desativar Temas</span>
+              <span class="header-sub-title">Clique no tema para alternar a exibição no mapa</span>
+            </div>
+            
+            <!-- Tema 1: AEF -->
+            <div class="menu-dropdown-item theme-item-aef theme-active" id="item-theme-aef" onclick="window.handleThemeItemClick(event, 'toggle-aef')" title="Clique para ativar/desativar Autorizações Florestais">
+              <div class="theme-info-box">
+                <div class="theme-title-line">
+                  <span class="theme-color-indicator dot-aef"></span>
+                  <span class="theme-title">Autorizações de Exploração Florestal (AEF)</span>
+                </div>
+                <div class="theme-status-line">
+                  <span class="theme-status-badge status-on" id="status-badge-aef">● HABILITADO (VISÍVEL NO MAPA)</span>
+                </div>
+              </div>
+              <label class="switch-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggle-aef" checked onchange="window.toggleAefLayer(this.checked)">
+                <span class="slider-round slider-aef"></span>
+              </label>
+            </div>
+
+            <!-- Tema 2: Reserva Legal -->
+            <div class="menu-dropdown-item theme-item-arl theme-active" id="item-theme-arl" onclick="window.handleThemeItemClick(event, 'toggle-arl')" title="Clique para ativar/desativar Reserva Legal">
+              <div class="theme-info-box">
+                <div class="theme-title-line">
+                  <span class="theme-color-indicator dot-arl"></span>
+                  <span class="theme-title">Reserva Legal</span>
+                </div>
+                <div class="theme-status-line">
+                  <span class="theme-status-badge status-on" id="status-badge-arl">● HABILITADO (VISÍVEL NO MAPA)</span>
+                </div>
+              </div>
+              <label class="switch-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggle-arl" checked onchange="window.toggleArlLayer(this.checked)">
+                <span class="slider-round slider-arl"></span>
+              </label>
+            </div>
+
+            <!-- Tema 3: Limites Municipais -->
+            <div class="menu-dropdown-item theme-item-limites theme-active" id="item-theme-limites" onclick="window.handleThemeItemClick(event, 'toggle-limites-muni-menu')" title="Clique para ativar/desativar Limites Municipais">
+              <div class="theme-info-box">
+                <div class="theme-title-line">
+                  <span class="theme-color-indicator dot-limites"></span>
+                  <span class="theme-title">Limites Municipais (139 TO)</span>
+                </div>
+                <div class="theme-status-line">
+                  <span class="theme-status-badge status-on" id="status-badge-limites">● HABILITADO (VISÍVEL NO MAPA)</span>
+                </div>
+              </div>
+              <label class="switch-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggle-limites-muni-menu" checked onchange="window.toggleLimitesMunicipaisLayer(this.checked)">
+                <span class="slider-round slider-limites"></span>
+              </label>
+            </div>
+
+            <!-- Tema 4: Autorizações IBAMA / SINAFLOR (TO) -->
+            <div class="menu-dropdown-item theme-item-ibama theme-active" id="item-theme-ibama" onclick="window.handleThemeItemClick(event, 'toggle-ibama')" title="Clique para ativar/desativar Autorizações Florestais IBAMA / SINAFLOR">
+              <div class="theme-info-box">
+                <div class="theme-title-line">
+                  <span class="theme-color-indicator dot-ibama"></span>
+                  <span class="theme-title">Autorizações IBAMA / SINAFLOR (TO)</span>
+                </div>
+                <div class="theme-status-line">
+                  <span class="theme-status-badge status-on" id="status-badge-ibama">● HABILITADO (VISÍVEL NO MAPA)</span>
+                </div>
+              </div>
+              <label class="switch-toggle" onclick="event.stopPropagation()">
+                <input type="checkbox" id="toggle-ibama" checked onchange="window.toggleIbamaLayer(this.checked)">
+                <span class="slider-round slider-ibama"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Conteúdo Principal Split: Sidebar + Mapa -->
+    <div class="main-content">
+      
+      <!-- Sidebar de Filtros e Opções -->
+      <aside class="sidebar" id="sidebar">
+        
+        <!-- SEÇÃO 1: MAPAS DE FUNDO COM PLANET 2026 (SEMARH / SIGCAR) -->
+        <div class="sidebar-section">
+          <div class="section-title">
+            <span>Mapas de Fundo</span>
+            <span class="badge-counter">5 Camadas GIS</span>
+          </div>
+          <div class="map-selector-grid">
+            
+            <!-- Opção Destaque: Planet 2026 (SEMARH / SIGCAR) -->
+            <div class="map-option-card card-featured" data-layer="planet2026" id="btn-layer-planet2026" title="Mosaicos Mensais Planet 2026 (SEMARH / SIGCAR) - Monitoramento da Cobertura Vegetal">
+              <img src="assets/map_planet_thumb.jpg" alt="Planet 2026 SEMARH / SIGCAR">
+              <div class="layer-label featured-label">🛰️ 1. Planet 2026 (SEMARH)</div>
+            </div>
+
+            <!-- Opção 2: Satélite Esri -->
+            <div class="map-option-card active" data-layer="satellite" id="btn-layer-satellite" title="Imagens de Satélite Esri">
+              <img src="assets/map_satellite_thumb.png" alt="Satélite Esri">
+              <div class="layer-label">2. Satélite Esri</div>
+            </div>
+            
+            <!-- Opção 3: Google / SPOT 2008 (CAR) -->
+            <div class="map-option-card" data-layer="spot2008" id="btn-layer-spot2008" title="Google / SPOT 2008 (Mosaico Histórico SICAR / CAR)">
+              <img src="assets/map_satellite_thumb.png" alt="Google / SPOT 2008">
+              <div class="layer-label">3. Google/SPOT 2008</div>
+            </div>
+
+            <!-- Opção 4: Topográfico -->
+            <div class="map-option-card" data-layer="topo" id="btn-layer-topo" title="Mapa Topográfico com Curvas de Nível">
+              <img src="assets/map_topo_thumb.png" alt="Mapa Topográfico">
+              <div class="layer-label">4. Topográfico</div>
+            </div>
+            
+            <!-- Opção 5: Vetorial Escuro -->
+            <div class="map-option-card" data-layer="dark" id="btn-layer-dark" title="Mapa Vetorial de Alto Contraste">
+              <img src="assets/map_dark_thumb.png" alt="Mapa Vetorial Escuro">
+              <div class="layer-label">5. Cartográfico</div>
+            </div>
+            
+          </div>
+
+          <!-- Seletor Mensal de Monitoramento Planet 2026 -->
+          <div id="planet-month-selector" class="planet-month-selector" style="display: none; margin-top: 0.85rem; padding: 0.75rem; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 6px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.4rem;">
+              <span style="font-size: 0.76rem; font-weight: 700; color: #34d399; display: flex; align-items: center; gap: 0.35rem;">
+                <svg viewBox="0 0 24 24" style="width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2;"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>
+                Mosaico Planet (Ano 2026)
+              </span>
+              <span style="font-size: 0.65rem; background: #064e3b; color: #a7f3d0; padding: 0.15rem 0.4rem; border-radius: 4px; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">SIGCAR / SEMARH</span>
+            </div>
+            <div style="font-size: 0.7rem; color: #cbd5e1; margin-bottom: 0.5rem; line-height: 1.3;">
+              Alterne entre os meses para monitorar a cobertura vegetal e desmates:
+            </div>
+            <div class="input-wrapper">
+              <select id="select-planet-month" class="form-select" onchange="window.changePlanetMonth(this.value)" style="padding-left: 0.75rem; font-size: 0.8rem; border-color: #10b981; background-color: #0f172a;">
+                <option value="global_monthly_2026_09_mosaic" selected>Setembro / 2026 (Mais Recente)</option>
+                <option value="global_monthly_2026_08_mosaic">Agosto / 2026</option>
+                <option value="global_monthly_2026_07_mosaic">Julho / 2026</option>
+                <option value="global_monthly_2026_06_mosaic">Junho / 2026</option>
+                <option value="global_monthly_2026_05_mosaic">Maio / 2026</option>
+                <option value="global_monthly_2026_04_mosaic">Abril / 2026</option>
+                <option value="global_monthly_2026_03_mosaic">Março / 2026</option>
+                <option value="global_monthly_2026_02_mosaic">Fevereiro / 2026</option>
+                <option value="global_monthly_2026_01_mosaic">Janeiro / 2026</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- SEÇÃO 2: 3 OPÇÕES DE CONSULTA -->
+        <div class="sidebar-section">
+          <div class="section-title">
+            <span>Modalidades de Consulta</span>
+          </div>
+          
+          <!-- Abas das 3 Opções -->
+          <div class="query-tabs">
+            <button class="tab-btn active" data-tab="tab-aef" id="tab-btn-aef">
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+              <span>1. Por AEF</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-muni" id="tab-btn-muni">
+              <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>2. Município</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-combo" id="tab-btn-combo">
+              <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>3. Combinada</span>
+            </button>
+            <button class="tab-btn" data-tab="tab-arl" id="tab-btn-arl">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span>4. Reserva Legal</span>
+            </button>
+          </div>
+
+          <!-- Conteúdo da Consulta 1: Por Número da AEF -->
+          <div class="query-panel-content active" id="tab-aef">
+            <form id="form-search-aef" onsubmit="event.preventDefault(); window.searchByAEF();">
+              <div class="form-group">
+                <label for="input-aef-num">Número da AEF / Processo CIGMA (NATURATINS)</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="input-aef-num" class="form-input" placeholder="Ex: AEF_398/2024, AEF_369/2025..." autocomplete="off">
+                </div>
+              </div>
+              <button type="submit" class="btn-search">
+                <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <span>Consultar AEF (NATURATINS)</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Conteúdo da Consulta 2: Por Município -->
+          <div class="query-panel-content" id="tab-muni">
+            <form id="form-search-muni" onsubmit="event.preventDefault(); window.searchByMunicipality();">
+              <div class="form-group">
+                <label for="select-municipio">Selecione o Município (139 TO)</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <select id="select-municipio" class="form-select">
+                    <option value="">-- Todos os 139 Municípios do Tocantins --</option>
+                  </select>
+                </div>
+              </div>
+              <button type="submit" class="btn-search">
+                <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+                <span>Filtrar por Limite Municipal</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Conteúdo da Consulta 3: Combinada (AEF + Município) -->
+          <div class="query-panel-content" id="tab-combo">
+            <form id="form-search-combo" onsubmit="event.preventDefault(); window.searchCombined();">
+              <div class="form-group">
+                <label for="combo-aef-num">Número da AEF</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  <input type="text" id="combo-aef-num" class="form-input" placeholder="Opcional: N° da AEF">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="combo-municipio">Município do Tocantins</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <select id="combo-municipio" class="form-select">
+                    <option value="">-- Qualquer Município --</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="combo-status">Status da Licença</label>
+                <div class="input-wrapper">
+                  <svg class="input-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                  <select id="combo-status" class="form-select">
+                    <option value="">-- Todos os Status --</option>
+                    <option value="ATIVA">Ativa</option>
+                    <option value="EM_ANALISE">Em Análise</option>
+                    <option value="SUSPENSA">Suspensa / Notificada</option>
+                    <option value="DESEMBARGO">Solicitação de Desembargo</option>
+                  </select>
+                </div>
+              </div>
+
+            <button type="submit" class="btn-search">
+              <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+              <span>Executar Busca Combinada</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Conteúdo da Consulta 4: Reserva Legal -->
+        <div class="query-panel-content" id="tab-arl">
+          <form id="form-search-arl" onsubmit="event.preventDefault(); window.searchARL();">
+            <div class="form-group">
+              <label for="arl-car">Número do CAR</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <input type="text" id="arl-car" class="form-input" placeholder="Ex: TO-...">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="arl-cpf">CPF do Titular</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <input type="text" id="arl-cpf" class="form-input" placeholder="Ex: 123.456.789-00">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="arl-municipio">Município (Filtro Espacial)</label>
+              <div class="input-wrapper">
+                <svg class="input-icon" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <select id="arl-municipio" class="form-select">
+                  <option value="">-- Qualquer Município --</option>
+                </select>
+              </div>
+            </div>
+            <button type="submit" class="btn-search">
+              <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+              <span>Buscar Reserva Legal</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+        <!-- SEÇÃO 3: RESULTADOS ENCONTRADOS -->
+        <div class="sidebar-section" style="flex: 1; border-bottom: none;">
+          <div class="results-header">
+            <div class="section-title" style="margin-bottom: 0;">
+              <span>Registros NATURATINS</span>
+            </div>
+            <button class="btn-reset" onclick="window.resetFilters()">Limpar Filtros</button>
+          </div>
+          
+          <div id="results-container" class="results-list">
+            <!-- Renderizado dinamicamente via app.js -->
+          </div>
+        </div>
+
+      </aside>
+
+      <!-- Canvas do Mapa Geográfico Leaflet -->
+      <div id="map-canvas"></div>
+
+      <!-- Controles Flutuantes do Mapa -->
+      <div class="map-floating-controls">
+        <button class="map-btn" onclick="window.zoomInMap()" title="Aumentar Zoom">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="map-btn" onclick="window.zoomOutMap()" title="Diminuir Zoom">
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+        <button class="map-btn" onclick="window.resetMapView()" title="Visão Geral do Tocantins">
+          <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        </button>
+      </div>
+
+      <!-- Barra de Coordenadas Geográficas -->
+      <div class="map-coords-bar" id="map-coords">
+        Lat: -10.1844° | Lng: -48.3336° | SIRGAS 2000 / NATURATINS
+      </div>
+
+      <!-- Drawer / Modal com Detalhes Completos da AEF Selecionada -->
+      <div class="detail-drawer" id="detail-drawer">
+        <div class="drawer-header">
+          <h3 id="drawer-aef-number">AEF</h3>
+          <button class="btn-close" onclick="window.closeDetailDrawer()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="drawer-body">
+          <div class="detail-item">
+            <label>Titular / Requerente</label>
+            <p id="drawer-titular">-</p>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Município</label>
+              <p id="drawer-municipio">-</p>
+            </div>
+            <div class="detail-item">
+              <label>Status da Licença</label>
+              <span id="drawer-status-badge" class="status-tag ATIVA">ATIVA</span>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <label>Imóvel Rural / Processo</label>
+            <p id="drawer-imovel">-</p>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>CAR Vinculado</label>
+              <p id="drawer-car" style="font-family: monospace;">-</p>
+            </div>
+            <div class="detail-item">
+              <label>Área Autorizada</label>
+              <p id="drawer-area">-</p>
+            </div>
+          </div>
+
+          <div class="detail-grid">
+            <div class="detail-item">
+              <label>Data de Emissão</label>
+              <p id="drawer-emissao">-</p>
+            </div>
+            <div class="detail-item">
+              <label>Data de Validade</label>
+              <p id="drawer-validade">-</p>
+            </div>
+          </div>
+
+          <div class="detail-item">
+            <label>Atividade Autorizada</label>
+            <p id="drawer-atividade">-</p>
+          </div>
+
+          <div class="detail-item">
+            <label>Notas Técnicas & CIGMA (NATURATINS)</label>
+            <p id="drawer-nota" style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">-</p>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn-secondary" onclick="window.printAEFReport()">
+              <svg viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              <span>Imprimir Ficha</span>
+            </button>
+            <button class="btn-secondary" onclick="window.zoomToCurrentAEF()">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+              <span>Focar no Mapa</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Leaflet GIS Script -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Scripts de Dados do Aplicativo -->
+  <script src="data.js"></script>
+  <script src="limites_tocantins_1.js"></script>
+  <script src="limites_tocantins_2.js"></script>
+  <script src="autorizacoes_ibama_1.js"></script>
+  <script src="autorizacoes_ibama_2.js"></script>
+  <script src="autorizacoes_ibama_3.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
